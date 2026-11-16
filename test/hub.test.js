@@ -186,11 +186,12 @@ test('an outage: offline after two failed readings, back at the first answer', a
   w.server.online = false;
   await w.hub.refresh();
   assert.equal(state(w, 'online'), 1, 'a blip is not an outage');
-  assert.equal(w.fake.connectionStatus.connected, false);
+  assert.deepEqual(w.fake.connectionStatus, { connected: true });
   await w.hub.refresh();
   assert.equal(state(w, 'online'), 0);
   const transports = w.fake.bodies('POST', '/device/transport');
   assert.equal(transports.at(-1).transports[0].transport, 'unreachable');
+  assert.match(w.fake.connectionStatus.message.fr, /pas de réponse/);
   w.server.online = true;
   await w.hub.refresh();
   assert.equal(state(w, 'online'), 1);
@@ -222,8 +223,47 @@ test('the container reads the server on its own timer, without onPoll', async (t
 test('a new address in the configuration: the new server is read', async (t) => {
   const server = new FakeLibreTranslate({ url: 'https://translate.example.org' });
   const w = await world(t, { server });
-  assert.equal(w.fake.connectionStatus.connected, false);
+  assert.equal(w.hub.state.error.kind, 'unreachable');
   await w.fake.configUpdated({ url: 'https://translate.example.org', language: 'de' });
   assert.deepEqual(w.fake.connectionStatus, { connected: true });
   assert.equal(w.fake.discoveredDevices[0].features[1].name, 'Verfügbare Sprachen');
+});
+
+test('a text without words is not detected as a language', async (t) => {
+  const w = await world(t);
+  w.server.override = (path) =>
+    path === '/detect' ? { status: 200, body: [{ confidence: 0.0, language: 'en' }] } : undefined;
+  const ack = await w.fake.sceneAction('detect_language', { text: '12345' });
+  assert.equal(ack.success, false);
+  assert.match(ack.error.en, /could not tell the language/);
+});
+
+test('the reading and its timer start even when Gladys refuses the discovery', async (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const w = await world(t, { timers: true, connect: false });
+  t.mock.method(w.gladys, 'publishDiscoveredDevices', async () => {
+    throw new Error('HTTP 503');
+  });
+  await w.gladys.connect();
+  await w.app.ready;
+  assert.equal(state(w, 'online'), 1);
+  const reads = () => w.server.requests.filter((r) => r.path === '/languages').length;
+  t.mock.timers.tick(5 * 60_000);
+  await w.hub.reading;
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(reads(), 2);
+});
+
+test('a server that answers again, even with an error, is no longer down', async (t) => {
+  const w = await world(t);
+  w.server.online = false;
+  await w.hub.refresh();
+  await w.hub.refresh();
+  assert.equal(w.hub.state.down, true);
+  w.server.online = true;
+  w.server.override = () => ({ status: 404, text: '<html>Not found</html>' });
+  await w.hub.refresh();
+  assert.equal(w.hub.state.down, false);
+  assert.equal(w.fake.bodies('POST', '/device/transport').at(-1).transports[0].transport, 'local');
+  assert.match(w.fake.connectionStatus.message.en, /no LibreTranslate server/);
 });

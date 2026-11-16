@@ -53,6 +53,20 @@ test('the widget is valid in every language and state', async (t) => {
   assert.equal(statusOf(down)[0].color, 'danger');
 });
 
+test('each optional block can be hidden', async (t) => {
+  const w = await world(t);
+  const bare = await content(w, 'en', {
+    show_counters: false,
+    show_last_translation: false,
+    show_languages: false,
+  });
+  assert.deepEqual(
+    bare.components.map((c) => c.type),
+    ['status'],
+  );
+  assert.equal(statusOf(bare).length, 1);
+});
+
 test('the language list can be hidden', async (t) => {
   const w = await world(t);
   const shown = await content(w, 'en', {});

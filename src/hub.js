@@ -45,6 +45,10 @@ export const MAX_TEXT_CHARACTERS = 10_000;
 // The window of the "translations" figure of the widget.
 const DAY_MS = 24 * 60 * 60_000;
 
+// The test translation of "Test the connection": the read before it takes up
+// to 10 s, and Gladys grants the button 60 s.
+const TEST_TIMEOUT_MS = 30_000;
+
 const DOWN_KINDS = new Set([ERROR_KINDS.UNREACHABLE, ERROR_KINDS.TIMEOUT]);
 
 /** A scene field as a trimmed string ('' for anything else). */
@@ -142,9 +146,18 @@ export class LibreTranslateHub {
       this.state = this.emptyState();
       clearTimeout(this.retryTimer);
     }
-    await this.publishDevices();
-    await this.refresh();
-    this.schedulePoll();
+    try {
+      await this.publishDevices();
+      this.resolved('discovery');
+    } catch (err) {
+      // The reading and its timer must start anyway: the scenes need them.
+      this.problem('discovery', `Discovery refused: ${err.message}`);
+    }
+    try {
+      await this.refresh();
+    } finally {
+      this.schedulePoll();
+    }
   }
 
   async stop() {
@@ -301,7 +314,10 @@ export class LibreTranslateHub {
     // Only silence counts as down: a wrong address is a configuration
     // problem, reported by the connection status.
     if (!DOWN_KINDS.has(err.kind)) {
+      // Something answers again: whatever it says, the server is not down.
       state.failures = 0;
+      state.down = false;
+      state.downSince = null;
       await this.publishStates();
       return wasError !== err.kind;
     }
@@ -391,7 +407,10 @@ export class LibreTranslateHub {
         message: this.config.urlTyped ? CONNECTION_TEXT.invalidUrl : CONNECTION_TEXT.noUrl,
       };
     }
-    if (this.state.error) {
+    // A single missed reading is a blip, not an outage: silence shows once
+    // the server counts as down.
+    const blip = this.state.error && DOWN_KINDS.has(this.state.error.kind) && !this.state.down;
+    if (this.state.error && !blip) {
       return {
         connected: false,
         message: prefixed(errorText(this.state.error.kind, this.state.error.detail)),
@@ -428,7 +447,8 @@ export class LibreTranslateHub {
   /** An error of the client, as the user reads it. */
   userError(err) {
     if (!err.kind) {
-      return err;
+      logger.error('Unexpected error', err);
+      return new ActionFailure(prefixed(errorText(ERROR_KINDS.HTTP)));
     }
     return new ActionFailure(prefixed(errorText(err.kind, err.detail)));
   }
@@ -486,7 +506,7 @@ export class LibreTranslateHub {
     const from = source === 'auto' ? (result.detected?.language ?? 'auto') : source;
     const seconds = Math.round((this.now() - started) / 100) / 10;
     // Lengths only: the text and its translation stay out of the logs.
-    logger.info(
+    logger.debug(
       `Translated ${from} → ${target} in ${seconds} s (${text.length} → ${translation.length} characters)`,
     );
     this.countTranslation({ source: from, target });
@@ -507,10 +527,11 @@ export class LibreTranslateHub {
       logger.warn(`Detection failed: ${err.message}`);
       throw this.userError(err);
     }
-    if (!best) {
+    // A text without words (digits, symbols) comes back as "en" at 0 %.
+    if (!best || best.confidence <= 0) {
       throw new ActionFailure(ACTION_TEXT.notDetected);
     }
-    logger.info(`Detected ${best.language} (${best.confidence} %, ${text.length} characters)`);
+    logger.debug(`Detected ${best.language} (${best.confidence} %, ${text.length} characters)`);
     return {
       language: best.language,
       language_name: languageName(best.language, this.config.language),
@@ -554,7 +575,12 @@ export class LibreTranslateHub {
     const to = from.targets.find((code) => code !== from.code) ?? from.code;
     const started = this.now();
     try {
-      await client.translate({ text: 'Hello', source: from.code, target: to });
+      await client.translate({
+        text: 'Hello',
+        source: from.code,
+        target: to,
+        timeoutMs: TEST_TIMEOUT_MS,
+      });
     } catch (err) {
       logger.warn(`Test translation failed: ${err.message}`);
       throw this.userError(err);

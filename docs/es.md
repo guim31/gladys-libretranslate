@@ -49,8 +49,8 @@ El servidor se lee cada cinco minutos:
 ## Panel
 
 El widget **LibreTranslate** muestra el número de idiomas, las traducciones de las últimas 24
-horas, el estado del servidor, la última traducción (idiomas y hora) y la lista de idiomas. Un
-ajuste oculta la lista.
+horas, el estado del servidor, la última traducción (idiomas y hora) y la lista de idiomas. Unos
+ajustes ocultan las cifras, la última traducción y la lista.
 
 ## Escenas
 

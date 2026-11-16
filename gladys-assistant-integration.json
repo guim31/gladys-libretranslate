@@ -184,6 +184,30 @@
       },
       "settings": [
         {
+          "key": "show_counters",
+          "type": "boolean",
+          "label": {
+            "en": "Show the figures",
+            "fr": "Afficher les chiffres",
+            "de": "Zahlen zeigen",
+            "es": "Mostrar las cifras"
+          },
+          "required": false,
+          "default": true
+        },
+        {
+          "key": "show_last_translation",
+          "type": "boolean",
+          "label": {
+            "en": "Show the last translation",
+            "fr": "Afficher la dernière traduction",
+            "de": "Letzte Übersetzung zeigen",
+            "es": "Mostrar la última traducción"
+          },
+          "required": false,
+          "default": true
+        },
+        {
           "key": "show_languages",
           "type": "boolean",
           "label": {
@@ -201,7 +225,7 @@
   "scene_actions": [
     {
       "key": "translate",
-      "timeout_seconds": 60,
+      "timeout_seconds": 90,
       "label": {
         "en": "LibreTranslate: translate a text",
         "fr": "LibreTranslate : traduire un texte",
@@ -1191,7 +1215,7 @@
     },
     {
       "key": "detect_language",
-      "timeout_seconds": 60,
+      "timeout_seconds": 90,
       "label": {
         "en": "LibreTranslate: detect the language",
         "fr": "LibreTranslate : détecter la langue",

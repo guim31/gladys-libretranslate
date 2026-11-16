@@ -19,8 +19,8 @@ account, no quota. It is the local alternative to the
   **Language (code)**, **Language (name)** and **Confidence (%)**.
 - **One device "LibreTranslate"**: online, languages available, version.
 - **Dashboard widget** "LibreTranslate": the server and its version, the
-  number of languages and their names (a setting hides them), the translations
-  of the last 24 hours and the last one.
+  number of languages and their names, the translations
+  of the last 24 hours and the last one (a setting hides each optional block).
 - A **Test the connection** button that shows the version and the languages,
   then translates one word to check the API key; a connection status that says
   what is wrong (no answer, key required, key refused, language not loaded…);

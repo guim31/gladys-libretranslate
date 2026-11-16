@@ -49,7 +49,7 @@ Der Server wird alle fünf Minuten gelesen:
 
 Das Widget **LibreTranslate** zeigt die Zahl der Sprachen, die Übersetzungen der letzten 24
 Stunden, den Zustand des Servers, die letzte Übersetzung (Sprachen und Uhrzeit) und die Liste der
-Sprachen. Eine Einstellung blendet die Liste aus.
+Sprachen. Einstellungen blenden die Zahlen, die letzte Übersetzung und die Liste aus.
 
 ## Szenen
 

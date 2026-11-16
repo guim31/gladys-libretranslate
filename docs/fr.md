@@ -48,8 +48,8 @@ Le serveur est lu toutes les cinq minutes :
 ## Tableau de bord
 
 Le widget **LibreTranslate** affiche le nombre de langues, les traductions des dernières 24
-heures, l'état du serveur, la dernière traduction (langues et heure) et la liste des langues. Un
-réglage masque la liste.
+heures, l'état du serveur, la dernière traduction (langues et heure) et la liste des langues. Des
+réglages masquent les chiffres, la dernière traduction et la liste.
 
 ## Scènes
 

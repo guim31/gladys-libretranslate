@@ -48,7 +48,7 @@ The server is read every five minutes:
 
 The **LibreTranslate** widget shows the number of languages, the translations of the last 24
 hours, the state of the server, the last translation (languages and time) and the list of
-languages. A setting hides the list.
+languages. Settings hide the figures, the last translation and the list.
 
 ## Scenes
 

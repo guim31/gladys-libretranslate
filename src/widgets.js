@@ -7,7 +7,7 @@
 //
 // Budget (8 components, 2 texts): two values (languages, translations of the
 // last 24 hours), one status list (the server, the last translation) and one
-// text with the language names, which a setting hides. The figures are
+// text with the language names; a setting hides each optional block. The figures are
 // values, not bound to device features: the widget works before the device is
 // added to Gladys.
 // -----------------------------------------------------------------------------
@@ -106,24 +106,28 @@ async function get(hub, { language = 'en', settings = {} } = {}) {
   }
   const { state } = hub;
   const components = [];
-  if (state.languages) {
+  if (settings.show_counters !== false) {
+    if (state.languages) {
+      components.push({
+        type: 'value',
+        value: state.languages.length,
+        label: t(TEXT.languages, language),
+        icon: 'globe',
+      });
+    }
     components.push({
-      type: 'value',
-      value: state.languages.length,
-      label: t(TEXT.languages, language),
-      icon: 'globe',
-    });
-  }
-  components.push(
-    {
       type: 'value',
       value: hub.translationsToday(),
       label: t(TEXT.translations, language),
       icon: 'repeat',
       color: WIDGET_COLORS.PRIMARY,
-    },
-    { type: 'status', items: [serverRow(state, language), lastRow(hub.lastTranslation, language)] },
-  );
+    });
+  }
+  const items = [serverRow(state, language)];
+  if (settings.show_last_translation !== false) {
+    items.push(lastRow(hub.lastTranslation, language));
+  }
+  components.push({ type: 'status', items });
   if (settings.show_languages !== false && state.languages?.length) {
     const names = state.languages
       .map((entry) => languageName(entry.code, language))

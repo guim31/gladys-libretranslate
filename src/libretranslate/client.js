@@ -113,10 +113,12 @@ export class LibreTranslateClient {
     }
     const serverError =
       data && typeof data.error === 'string' ? data.error.slice(0, MAX_SERVER_ERROR) : null;
+    // The text of an unexpected error ("Cannot translate text: …") can echo
+    // the input: it stays out of the message, hence out of the logs.
     const fail = (kind, extra = {}) =>
       new LibreTranslateError(
         kind,
-        `${method} ${path}: HTTP ${response.status}${serverError ? ` ${serverError}` : ''}`,
+        `${method} ${path}: HTTP ${response.status}${serverError && kind !== ERROR_KINDS.HTTP ? ` ${serverError}` : ''}`,
         { status: response.status, ...extra },
       );
     // 403 is also the ban of a client over the limits ("Too many request
