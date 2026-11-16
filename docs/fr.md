@@ -1,67 +1,106 @@
-# Template de démonstration
+# LibreTranslate
 
-Ceci est la documentation utilisateur de l'intégration. Gladys ré-héberge ce
-fichier et affiche un lien **Documentation** permanent vers lui dans l'écran
-de configuration (dans la langue de l'utilisateur, avec l'anglais en repli) —
-c'est au moment de configurer que l'utilisateur en a le plus besoin. Gardez
-les courtes indications d'accueil dans les blocs `section` du `config_schema`
-du manifest ; mettez ici le pas-à-pas détaillé (captures d'écran, dépannage…).
+[LibreTranslate](https://libretranslate.com) est un serveur de traduction automatique libre et
+open source, que vous faites tourner vous-même. Cette intégration permet à vos scènes Gladys de
+traduire un texte, avec des informations de la scène dedans, et d'utiliser la traduction dans les
+actions suivantes : l'envoyer en message, la faire lire à voix haute. Elle sait aussi reconnaître
+la langue d'un texte. Tout reste sur votre réseau : pas de compte, pas de cloud, pas de quota.
 
-## Ce que vous obtenez
+C'est l'alternative locale à l'intégration DeepL. Elle suit aussi le serveur : en ligne ou non, sa
+version, le nombre de langues chargées, avec un widget pour le tableau de bord.
 
-Six appareils de démonstration apparaissent après l'installation : une
-station météo (vraies données Open-Meteo), un interrupteur, une lampe
-variable, une prise connectée avec mesure de puissance, un détecteur de
-mouvement et une caméra.
+Sans lien avec LibreTranslate. Testée avec un vrai serveur LibreTranslate 1.9.6.
 
-## Configuration
+## Ce qu'il vous faut
 
-1. Ouvrez l'onglet **Configuration** de l'intégration.
-2. Renseignez la **latitude** et la **longitude** que la station météo de
-   démonstration doit observer (Paris par défaut), et choisissez votre unité
-   de température. L'**intervalle de rafraîchissement** règle la fréquence
-   de lecture de la station météo et de la puissance de la prise : toutes
-   les 5 minutes par défaut, toutes les minutes au plus.
-3. Enregistrez : les appareils apparaissent dans l'onglet **Découverte**,
-   prêts à être ajoutés.
+- Gladys 5.1 ou plus récent.
+- Un serveur LibreTranslate sur votre réseau. Avec Docker :
+  `docker run -d -p 5000:5000 libretranslate/libretranslate --load-only en,fr,de,es`.
+  `--load-only` ne garde que les langues utiles : chaque paire de langues est un modèle à
+  télécharger et à garder en mémoire (comptez environ 2 Go de RAM pour quatre langues).
+- Ou une instance publique qui vous donne une clé d'API (libretranslate.com est un service
+  payant).
 
-Le réglage **Préférer la connexion locale** pilote la prise de
-démonstration : elle affiche en badge le canal réellement utilisé (local ou
-cloud), avec un point orange quand elle fonctionne en mode dégradé (local
-refusé, bascule cloud).
+## Mise en place
 
-## Actions
+1. Dans Gladys, ouvrez **Intégrations**, cherchez **LibreTranslate** et installez-la.
+2. Dans **Configuration**, renseignez :
+   - **Adresse du serveur** : l'adresse IP ou le nom du serveur, par exemple `192.168.1.20` (le
+     port 5000 est ajouté), `192.168.1.20:5001`, ou l'URL complète d'un proxy inverse ;
+   - **Clé d'API (facultative)** : seulement si le serveur en exige une (lancé avec
+     `--api-keys`, ou une instance publique) ;
+   - **Langue des noms** : la langue des noms des fonctionnalités et du nom de langue donné par
+     la détection.
+3. Cliquez sur **Tester la connexion** : elle affiche la version et les langues du serveur, puis
+   traduit un mot pour vérifier la clé.
+4. Dans **Découverte**, ajoutez l'appareil **LibreTranslate** si vous voulez ses états dans
+   Gladys (facultatif : les actions de scène fonctionnent sans lui).
 
-- **Tester le fournisseur météo** — effectue une requête en direct vers
-  Open-Meteo et affiche la température et l'humidité actuelles sous le
-  bouton.
-- **Identifier un appareil** — choisissez un de vos appareils dans la liste
-  et il se signale (la lampe de démonstration « clignote » dans les logs).
+## L'appareil LibreTranslate
 
-## Scènes
+Le serveur est lu toutes les cinq minutes :
 
-L'intégration ajoute ses propres cartes à l'éditeur de scènes (Gladys 5.1
-ou plus récent), dans la catégorie **Intégrations** :
-
-- **Mouvement détecté** (déclencheur) — lance la scène quand un détecteur
-  de démonstration voit bouger quelque chose. Choisissez éventuellement le
-  détecteur et ce qui a bougé (personne, animal) ; laissés vides, toute
-  détection correspond. Les actions suivantes peuvent lire ce qui a bougé
-  avec `{{triggerEvent.data.target}}`.
-- **Identifier un appareil** (action) — fait se signaler l'appareil choisi.
-  Elle indique si l'appareil a pu se signaler, pour que les actions
-  suivantes puissent en dépendre.
+- **En ligne** : oui quand le serveur répond ; non après deux lectures ratées de suite, à 15
+  secondes d'intervalle.
+- **Langues disponibles** : le nombre de langues chargées par le serveur.
+- **Version** : la version de LibreTranslate.
 
 ## Tableau de bord
 
-Ajoutez le widget **État de la démo** à un tableau de bord : il affiche en
-direct la température de la station météo et la puissance de la prise du
-bureau, la connexion utilisée par la prise (en orange si dégradée) et la
-position observée. Son bouton **Identifier la lampe** fait se signaler la
-lampe de démonstration.
+Le widget **LibreTranslate** affiche le nombre de langues, les traductions des dernières 24
+heures, l'état du serveur, la dernière traduction (langues et heure) et la liste des langues. Un
+réglage masque la liste.
+
+## Scènes
+
+### Actions
+
+- **LibreTranslate : traduire un texte** :
+  - **Texte à traduire** : tapez `{{` pour insérer des informations de la scène, par exemple une
+    valeur du déclencheur ou le message reçu ;
+  - **Vers** : la langue de la traduction ;
+  - **Depuis** : vide pour laisser le serveur la détecter.
+
+  Ses résultats sont disponibles pour les actions suivantes : **Traduction**
+  (`{{0.1.translation}}` pour la première action de la deuxième ligne) et **Langue source
+  (code)** (`{{0.1.source_language}}`, par exemple `fr`). Dans une action **Envoyer un
+  message**, tapez `{{` et choisissez **Traduction**.
+
+- **LibreTranslate : détecter la langue** : donne la langue d'un **Texte**, parmi celles que le
+  serveur a chargées. Résultats : **Langue (code)** (`{{0.1.language}}`, par exemple `de`),
+  **Langue (nom)** (`{{0.1.language_name}}`, dans la langue de la configuration) et **Confiance
+  (%)** (`{{0.1.confidence}}`).
+
+Quand une action échoue (serveur arrêté, langue non chargée, clé refusée, texte vide), Gladys
+affiche la raison en rouge, l'action ne donne aucun résultat et la scène continue.
+
+### Idées de scènes
+
+- **Messages pour un invité** : quand un mode invité est actif, traduisez les notifications dans
+  sa langue avant de les envoyer.
+- **Alertes parlées en deux langues** : traduisez « La machine à laver a terminé. » et lisez les
+  deux versions sur une enceinte.
+- **Répondre dans la bonne langue** : détectez la langue d'un message reçu, puis traduisez la
+  réponse dans cette langue.
 
 ## Dépannage
 
-L'intégration journalise tout ce qu'elle fait : consultez les logs de
-l'intégration depuis l'interface Gladys (ou `docker logs` sur l'hôte) avec
-`LOG_LEVEL=debug` pour le détail complet.
+- **« pas de réponse »** : vérifiez l'adresse et le port (5000), que le serveur
+  est démarré et, avec Docker, que le port est publié. Le premier démarrage télécharge les
+  modèles : cela peut prendre plusieurs minutes.
+- **« langue … non chargée sur le serveur »** : le serveur a été lancé avec `--load-only` sans
+  cette langue. Ajoutez-la et redémarrez le serveur.
+- **« ce serveur exige une clé d'API »** / **« clé d'API refusée »** : saisissez la clé dans la
+  configuration, ou créez-en une avec `ltmanage keys add` sur le serveur.
+- **« trop de requêtes »** : le serveur limite les requêtes (`--req-limit`, ou l'offre d'une
+  instance publique).
+- Problèmes et idées :
+  [issues GitHub](https://github.com/guim31/gladys-libretranslate/issues).
+
+## Limites
+
+- Traduction automatique : bien pour des notifications courtes, moins pour des textes longs ou
+  nuancés.
+- Texte seulement, jusqu'à 10 000 caractères par action (ce que Gladys rend à une scène).
+- La détection est fiable sur une phrase, beaucoup moins sur un ou deux mots.
+- Les textes et leurs traductions ne vont jamais dans les journaux de l'intégration.

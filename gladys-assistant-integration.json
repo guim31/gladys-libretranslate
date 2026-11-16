@@ -1,177 +1,1254 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "LibreTranslate",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Translate texts in your scenes with your own LibreTranslate server: local, free, no cloud.",
+    "fr": "Traduisez des textes dans vos scènes avec votre serveur LibreTranslate : local, libre, sans cloud.",
+    "de": "Übersetze Texte in deinen Szenen mit deinem LibreTranslate-Server: lokal, frei, ohne Cloud.",
+    "es": "Traduzca textos en sus escenas con su servidor LibreTranslate: local, libre, sin nube."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
+  "docker_image": "ghcr.io/guim31/gladys-libretranslate:1.0.0",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-libretranslate/main/cover.png",
+  "categories": ["services"],
+  "transports": ["local"],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Getting started",
+        "fr": "Pour commencer",
+        "de": "Erste Schritte",
+        "es": "Primeros pasos"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "Run LibreTranslate on your network (Docker: libretranslate/libretranslate, add --load-only en,fr,de,es to keep it small) and type its address below. The scene action \"LibreTranslate: translate a text\" then gives the translation to the next actions.",
+        "fr": "Lancez LibreTranslate sur votre réseau (Docker : libretranslate/libretranslate, ajoutez --load-only en,fr,de,es pour l'alléger) et saisissez son adresse ci-dessous. L'action de scène « LibreTranslate : traduire un texte » donne alors la traduction aux actions suivantes.",
+        "de": "Starte LibreTranslate in deinem Netzwerk (Docker: libretranslate/libretranslate, mit --load-only en,fr,de,es bleibt es klein) und gib unten seine Adresse ein. Die Szenenaktion „LibreTranslate: Text übersetzen“ gibt die Übersetzung dann an die nächsten Aktionen weiter.",
+        "es": "Inicie LibreTranslate en su red (Docker: libretranslate/libretranslate, añada --load-only en,fr,de,es para aligerarlo) e introduzca su dirección abajo. La acción de escena «LibreTranslate: traducir un texto» pasa entonces la traducción a las acciones siguientes."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://docs.libretranslate.com/guides/installation/",
+          "label": {
+            "en": "Install LibreTranslate",
+            "fr": "Installer LibreTranslate",
+            "de": "LibreTranslate installieren",
+            "es": "Instalar LibreTranslate"
+          }
+        },
+        {
+          "url": "https://github.com/guim31/gladys-libretranslate/blob/main/docs/en.md",
+          "label": {
+            "en": "Integration documentation",
+            "fr": "Documentation de l'intégration",
+            "de": "Dokumentation der Integration",
+            "es": "Documentación de la integración"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "key": "url",
+      "type": "string",
+      "label": {
+        "en": "Server address",
+        "fr": "Adresse du serveur",
+        "de": "Serveradresse",
+        "es": "Dirección del servidor"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
+      "description": {
+        "en": "IP or name of the server, port 5000 by default, or the full address behind a reverse proxy.",
+        "fr": "IP ou nom du serveur, port 5000 par défaut, ou l'adresse complète derrière un proxy inverse.",
+        "de": "IP oder Name des Servers, standardmäßig Port 5000, oder die volle Adresse hinter einem Reverse-Proxy.",
+        "es": "IP o nombre del servidor, puerto 5000 por defecto, o la dirección completa tras un proxy inverso."
+      },
+      "placeholder": {
+        "en": "http://192.168.1.20:5000",
+        "fr": "http://192.168.1.20:5000",
+        "de": "http://192.168.1.20:5000",
+        "es": "http://192.168.1.20:5000"
+      },
+      "required": true
     },
     {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
+      "key": "api_key",
+      "type": "secret",
+      "label": {
+        "en": "API key (optional)",
+        "fr": "Clé d'API (facultative)",
+        "de": "API-Schlüssel (optional)",
+        "es": "Clave de API (opcional)"
       },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
+      "description": {
+        "en": "Only when the server requires one (started with --api-keys, or a public instance). Never logged.",
+        "fr": "Seulement si le serveur en exige une (lancé avec --api-keys, ou une instance publique). Jamais journalisée.",
+        "de": "Nur wenn der Server einen verlangt (mit --api-keys gestartet, oder eine öffentliche Instanz). Nie protokolliert.",
+        "es": "Solo si el servidor la exige (iniciado con --api-keys, o una instancia pública). Nunca se registra."
+      },
+      "required": false
     },
     {
-      "key": "unit",
+      "key": "language",
       "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
-      "required": false,
-      "default": "celsius",
-      "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
-      ]
-    },
-    {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "label": {
+        "en": "Language of the names",
+        "fr": "Langue des noms",
+        "de": "Sprache der Namen",
+        "es": "Idioma de los nombres"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "Names of the device features, and of the language given by \"detect the language\".",
+        "fr": "Noms des fonctionnalités de l'appareil, et de la langue donnée par « détecter la langue ».",
+        "de": "Namen der Gerätefunktionen und der Sprache, die „Sprache erkennen“ liefert.",
+        "es": "Nombres de las funciones del dispositivo y del idioma que da «detectar el idioma»."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
-      "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
+      "key": "test_connection",
+      "timeout_seconds": 60,
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "description": {
+        "en": "Reads the version and the languages of the server, then translates one word to check the key.",
+        "fr": "Lit la version et les langues du serveur, puis traduit un mot pour vérifier la clé.",
+        "de": "Liest Version und Sprachen des Servers und übersetzt dann ein Wort, um den Schlüssel zu prüfen.",
+        "es": "Lee la versión y los idiomas del servidor y luego traduce una palabra para comprobar la clave."
+      }
     }
   ],
-  "scene_triggers": [
+  "widgets": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
-      "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+      "key": "libretranslate",
+      "icon": "globe",
+      "label": {
+        "en": "LibreTranslate",
+        "fr": "LibreTranslate",
+        "de": "LibreTranslate",
+        "es": "LibreTranslate"
       },
-      "fields": [
+      "description": {
+        "en": "The translation server, its languages, the translations of your scenes today.",
+        "fr": "Le serveur de traduction, ses langues, les traductions de vos scènes du jour.",
+        "de": "Der Übersetzungsserver, seine Sprachen, die heutigen Übersetzungen deiner Szenen.",
+        "es": "El servidor de traducción, sus idiomas, las traducciones de sus escenas de hoy."
+      },
+      "settings": [
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
-        },
-        {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
-        }
-      ],
-      "variables": [
-        {
-          "key": "target",
-          "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "key": "show_languages",
+          "type": "boolean",
+          "label": {
+            "en": "Show the list of languages",
+            "fr": "Afficher la liste des langues",
+            "de": "Liste der Sprachen zeigen",
+            "es": "Mostrar la lista de idiomas"
+          },
+          "required": false,
+          "default": true
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "translate",
+      "timeout_seconds": 60,
+      "label": {
+        "en": "LibreTranslate: translate a text",
+        "fr": "LibreTranslate : traduire un texte",
+        "de": "LibreTranslate: Text übersetzen",
+        "es": "LibreTranslate: traducir un texto"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "Translates the text (variables allowed) on your server and gives the translation to the next actions, e.g. a message or a spoken text.",
+        "fr": "Traduit le texte (variables possibles) sur votre serveur et donne la traduction aux actions suivantes, par exemple un message ou un texte lu.",
+        "de": "Übersetzt den Text (Variablen möglich) auf deinem Server und gibt die Übersetzung an die nächsten Aktionen, z. B. eine Nachricht oder eine Sprachausgabe.",
+        "es": "Traduce el texto (se admiten variables) en su servidor y pasa la traducción a las acciones siguientes, por ejemplo un mensaje o un texto hablado."
+      },
       "fields": [
         {
-          "key": "device",
+          "key": "text",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "Text to translate",
+            "fr": "Texte à traduire",
+            "de": "Zu übersetzender Text",
+            "es": "Texto a traducir"
+          }
+        },
+        {
+          "key": "target",
           "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
+          "required": true,
+          "default": "en",
+          "label": {
+            "en": "Into",
+            "fr": "Vers",
+            "de": "Nach",
+            "es": "Hacia"
+          },
+          "description": {
+            "en": "The server must have loaded this language.",
+            "fr": "Le serveur doit avoir chargé cette langue.",
+            "de": "Der Server muss diese Sprache geladen haben.",
+            "es": "El servidor debe haber cargado este idioma."
+          },
+          "options": [
+            {
+              "value": "sq",
+              "label": {
+                "en": "Albanian (sq)",
+                "fr": "Albanais (sq)",
+                "de": "Albanisch (sq)",
+                "es": "Albanés (sq)"
+              }
+            },
+            {
+              "value": "ar",
+              "label": {
+                "en": "Arabic (ar)",
+                "fr": "Arabe (ar)",
+                "de": "Arabisch (ar)",
+                "es": "Árabe (ar)"
+              }
+            },
+            {
+              "value": "az",
+              "label": {
+                "en": "Azerbaijani (az)",
+                "fr": "Azerbaïdjanais (az)",
+                "de": "Aserbaidschanisch (az)",
+                "es": "Azerbaiyano (az)"
+              }
+            },
+            {
+              "value": "bn",
+              "label": {
+                "en": "Bangla (bn)",
+                "fr": "Bengali (bn)",
+                "de": "Bengalisch (bn)",
+                "es": "Bengalí (bn)"
+              }
+            },
+            {
+              "value": "eu",
+              "label": {
+                "en": "Basque (eu)",
+                "fr": "Basque (eu)",
+                "de": "Baskisch (eu)",
+                "es": "Euskera (eu)"
+              }
+            },
+            {
+              "value": "pt-BR",
+              "label": {
+                "en": "Brazilian Portuguese (pt-BR)",
+                "fr": "Portugais brésilien (pt-BR)",
+                "de": "Portugiesisch (Brasilien) (pt-BR)",
+                "es": "Portugués de Brasil (pt-BR)"
+              }
+            },
+            {
+              "value": "bg",
+              "label": {
+                "en": "Bulgarian (bg)",
+                "fr": "Bulgare (bg)",
+                "de": "Bulgarisch (bg)",
+                "es": "Búlgaro (bg)"
+              }
+            },
+            {
+              "value": "ca",
+              "label": {
+                "en": "Catalan (ca)",
+                "fr": "Catalan (ca)",
+                "de": "Katalanisch (ca)",
+                "es": "Catalán (ca)"
+              }
+            },
+            {
+              "value": "cs",
+              "label": {
+                "en": "Czech (cs)",
+                "fr": "Tchèque (cs)",
+                "de": "Tschechisch (cs)",
+                "es": "Checo (cs)"
+              }
+            },
+            {
+              "value": "da",
+              "label": {
+                "en": "Danish (da)",
+                "fr": "Danois (da)",
+                "de": "Dänisch (da)",
+                "es": "Danés (da)"
+              }
+            },
+            {
+              "value": "nl",
+              "label": {
+                "en": "Dutch (nl)",
+                "fr": "Néerlandais (nl)",
+                "de": "Niederländisch (nl)",
+                "es": "Neerlandés (nl)"
+              }
+            },
+            {
+              "value": "en",
+              "label": {
+                "en": "English (en)",
+                "fr": "Anglais (en)",
+                "de": "Englisch (en)",
+                "es": "Inglés (en)"
+              }
+            },
+            {
+              "value": "eo",
+              "label": {
+                "en": "Esperanto (eo)",
+                "fr": "Espéranto (eo)",
+                "de": "Esperanto (eo)",
+                "es": "Esperanto (eo)"
+              }
+            },
+            {
+              "value": "et",
+              "label": {
+                "en": "Estonian (et)",
+                "fr": "Estonien (et)",
+                "de": "Estnisch (et)",
+                "es": "Estonio (et)"
+              }
+            },
+            {
+              "value": "tl",
+              "label": {
+                "en": "Filipino (tl)",
+                "fr": "Filipino (tl)",
+                "de": "Filipino (tl)",
+                "es": "Filipino (tl)"
+              }
+            },
+            {
+              "value": "fi",
+              "label": {
+                "en": "Finnish (fi)",
+                "fr": "Finnois (fi)",
+                "de": "Finnisch (fi)",
+                "es": "Finés (fi)"
+              }
+            },
+            {
+              "value": "fr",
+              "label": {
+                "en": "French (fr)",
+                "fr": "Français (fr)",
+                "de": "Französisch (fr)",
+                "es": "Francés (fr)"
+              }
+            },
+            {
+              "value": "gl",
+              "label": {
+                "en": "Galician (gl)",
+                "fr": "Galicien (gl)",
+                "de": "Galicisch (gl)",
+                "es": "Gallego (gl)"
+              }
+            },
+            {
+              "value": "de",
+              "label": {
+                "en": "German (de)",
+                "fr": "Allemand (de)",
+                "de": "Deutsch (de)",
+                "es": "Alemán (de)"
+              }
+            },
+            {
+              "value": "el",
+              "label": {
+                "en": "Greek (el)",
+                "fr": "Grec (el)",
+                "de": "Griechisch (el)",
+                "es": "Griego (el)"
+              }
+            },
+            {
+              "value": "he",
+              "label": {
+                "en": "Hebrew (he)",
+                "fr": "Hébreu (he)",
+                "de": "Hebräisch (he)",
+                "es": "Hebreo (he)"
+              }
+            },
+            {
+              "value": "hi",
+              "label": {
+                "en": "Hindi (hi)",
+                "fr": "Hindi (hi)",
+                "de": "Hindi (hi)",
+                "es": "Hindi (hi)"
+              }
+            },
+            {
+              "value": "hu",
+              "label": {
+                "en": "Hungarian (hu)",
+                "fr": "Hongrois (hu)",
+                "de": "Ungarisch (hu)",
+                "es": "Húngaro (hu)"
+              }
+            },
+            {
+              "value": "id",
+              "label": {
+                "en": "Indonesian (id)",
+                "fr": "Indonésien (id)",
+                "de": "Indonesisch (id)",
+                "es": "Indonesio (id)"
+              }
+            },
+            {
+              "value": "ga",
+              "label": {
+                "en": "Irish (ga)",
+                "fr": "Irlandais (ga)",
+                "de": "Irisch (ga)",
+                "es": "Irlandés (ga)"
+              }
+            },
+            {
+              "value": "it",
+              "label": {
+                "en": "Italian (it)",
+                "fr": "Italien (it)",
+                "de": "Italienisch (it)",
+                "es": "Italiano (it)"
+              }
+            },
+            {
+              "value": "ja",
+              "label": {
+                "en": "Japanese (ja)",
+                "fr": "Japonais (ja)",
+                "de": "Japanisch (ja)",
+                "es": "Japonés (ja)"
+              }
+            },
+            {
+              "value": "ko",
+              "label": {
+                "en": "Korean (ko)",
+                "fr": "Coréen (ko)",
+                "de": "Koreanisch (ko)",
+                "es": "Coreano (ko)"
+              }
+            },
+            {
+              "value": "ky",
+              "label": {
+                "en": "Kyrgyz (ky)",
+                "fr": "Kirghize (ky)",
+                "de": "Kirgisisch (ky)",
+                "es": "Kirguís (ky)"
+              }
+            },
+            {
+              "value": "lv",
+              "label": {
+                "en": "Latvian (lv)",
+                "fr": "Letton (lv)",
+                "de": "Lettisch (lv)",
+                "es": "Letón (lv)"
+              }
+            },
+            {
+              "value": "lt",
+              "label": {
+                "en": "Lithuanian (lt)",
+                "fr": "Lituanien (lt)",
+                "de": "Litauisch (lt)",
+                "es": "Lituano (lt)"
+              }
+            },
+            {
+              "value": "ms",
+              "label": {
+                "en": "Malay (ms)",
+                "fr": "Malais (ms)",
+                "de": "Malaiisch (ms)",
+                "es": "Malayo (ms)"
+              }
+            },
+            {
+              "value": "nb",
+              "label": {
+                "en": "Norwegian Bokmål (nb)",
+                "fr": "Norvégien bokmål (nb)",
+                "de": "Norwegisch (Bokmål) (nb)",
+                "es": "Noruego bokmal (nb)"
+              }
+            },
+            {
+              "value": "fa",
+              "label": {
+                "en": "Persian (fa)",
+                "fr": "Persan (fa)",
+                "de": "Persisch (fa)",
+                "es": "Persa (fa)"
+              }
+            },
+            {
+              "value": "pl",
+              "label": {
+                "en": "Polish (pl)",
+                "fr": "Polonais (pl)",
+                "de": "Polnisch (pl)",
+                "es": "Polaco (pl)"
+              }
+            },
+            {
+              "value": "pt",
+              "label": {
+                "en": "Portuguese (pt)",
+                "fr": "Portugais (pt)",
+                "de": "Portugiesisch (pt)",
+                "es": "Portugués (pt)"
+              }
+            },
+            {
+              "value": "ro",
+              "label": {
+                "en": "Romanian (ro)",
+                "fr": "Roumain (ro)",
+                "de": "Rumänisch (ro)",
+                "es": "Rumano (ro)"
+              }
+            },
+            {
+              "value": "ru",
+              "label": {
+                "en": "Russian (ru)",
+                "fr": "Russe (ru)",
+                "de": "Russisch (ru)",
+                "es": "Ruso (ru)"
+              }
+            },
+            {
+              "value": "zh-Hans",
+              "label": {
+                "en": "Simplified Chinese (zh-Hans)",
+                "fr": "Chinois simplifié (zh-Hans)",
+                "de": "Chinesisch (vereinfacht) (zh-Hans)",
+                "es": "Chino simplificado (zh-Hans)"
+              }
+            },
+            {
+              "value": "sk",
+              "label": {
+                "en": "Slovak (sk)",
+                "fr": "Slovaque (sk)",
+                "de": "Slowakisch (sk)",
+                "es": "Eslovaco (sk)"
+              }
+            },
+            {
+              "value": "sl",
+              "label": {
+                "en": "Slovenian (sl)",
+                "fr": "Slovène (sl)",
+                "de": "Slowenisch (sl)",
+                "es": "Esloveno (sl)"
+              }
+            },
+            {
+              "value": "es",
+              "label": {
+                "en": "Spanish (es)",
+                "fr": "Espagnol (es)",
+                "de": "Spanisch (es)",
+                "es": "Español (es)"
+              }
+            },
+            {
+              "value": "sw",
+              "label": {
+                "en": "Swahili (sw)",
+                "fr": "Swahili (sw)",
+                "de": "Suaheli (sw)",
+                "es": "Suajili (sw)"
+              }
+            },
+            {
+              "value": "sv",
+              "label": {
+                "en": "Swedish (sv)",
+                "fr": "Suédois (sv)",
+                "de": "Schwedisch (sv)",
+                "es": "Sueco (sv)"
+              }
+            },
+            {
+              "value": "th",
+              "label": {
+                "en": "Thai (th)",
+                "fr": "Thaï (th)",
+                "de": "Thailändisch (th)",
+                "es": "Tailandés (th)"
+              }
+            },
+            {
+              "value": "zh-Hant",
+              "label": {
+                "en": "Traditional Chinese (zh-Hant)",
+                "fr": "Chinois traditionnel (zh-Hant)",
+                "de": "Chinesisch (traditionell) (zh-Hant)",
+                "es": "Chino tradicional (zh-Hant)"
+              }
+            },
+            {
+              "value": "tr",
+              "label": {
+                "en": "Turkish (tr)",
+                "fr": "Turc (tr)",
+                "de": "Türkisch (tr)",
+                "es": "Turco (tr)"
+              }
+            },
+            {
+              "value": "uk",
+              "label": {
+                "en": "Ukrainian (uk)",
+                "fr": "Ukrainien (uk)",
+                "de": "Ukrainisch (uk)",
+                "es": "Ucraniano (uk)"
+              }
+            },
+            {
+              "value": "ur",
+              "label": {
+                "en": "Urdu (ur)",
+                "fr": "Ourdou (ur)",
+                "de": "Urdu (ur)",
+                "es": "Urdu (ur)"
+              }
+            },
+            {
+              "value": "vi",
+              "label": {
+                "en": "Vietnamese (vi)",
+                "fr": "Vietnamien (vi)",
+                "de": "Vietnamesisch (vi)",
+                "es": "Vietnamita (vi)"
+              }
+            }
+          ]
+        },
+        {
+          "key": "source",
+          "type": "select",
+          "required": false,
+          "label": {
+            "en": "From",
+            "fr": "Depuis",
+            "de": "Von",
+            "es": "Desde"
+          },
+          "description": {
+            "en": "Empty: detected by the server.",
+            "fr": "Vide : détectée par le serveur.",
+            "de": "Leer: vom Server erkannt.",
+            "es": "Vacío: lo detecta el servidor."
+          },
+          "options": [
+            {
+              "value": "sq",
+              "label": {
+                "en": "Albanian (sq)",
+                "fr": "Albanais (sq)",
+                "de": "Albanisch (sq)",
+                "es": "Albanés (sq)"
+              }
+            },
+            {
+              "value": "ar",
+              "label": {
+                "en": "Arabic (ar)",
+                "fr": "Arabe (ar)",
+                "de": "Arabisch (ar)",
+                "es": "Árabe (ar)"
+              }
+            },
+            {
+              "value": "az",
+              "label": {
+                "en": "Azerbaijani (az)",
+                "fr": "Azerbaïdjanais (az)",
+                "de": "Aserbaidschanisch (az)",
+                "es": "Azerbaiyano (az)"
+              }
+            },
+            {
+              "value": "bn",
+              "label": {
+                "en": "Bangla (bn)",
+                "fr": "Bengali (bn)",
+                "de": "Bengalisch (bn)",
+                "es": "Bengalí (bn)"
+              }
+            },
+            {
+              "value": "eu",
+              "label": {
+                "en": "Basque (eu)",
+                "fr": "Basque (eu)",
+                "de": "Baskisch (eu)",
+                "es": "Euskera (eu)"
+              }
+            },
+            {
+              "value": "pt-BR",
+              "label": {
+                "en": "Brazilian Portuguese (pt-BR)",
+                "fr": "Portugais brésilien (pt-BR)",
+                "de": "Portugiesisch (Brasilien) (pt-BR)",
+                "es": "Portugués de Brasil (pt-BR)"
+              }
+            },
+            {
+              "value": "bg",
+              "label": {
+                "en": "Bulgarian (bg)",
+                "fr": "Bulgare (bg)",
+                "de": "Bulgarisch (bg)",
+                "es": "Búlgaro (bg)"
+              }
+            },
+            {
+              "value": "ca",
+              "label": {
+                "en": "Catalan (ca)",
+                "fr": "Catalan (ca)",
+                "de": "Katalanisch (ca)",
+                "es": "Catalán (ca)"
+              }
+            },
+            {
+              "value": "cs",
+              "label": {
+                "en": "Czech (cs)",
+                "fr": "Tchèque (cs)",
+                "de": "Tschechisch (cs)",
+                "es": "Checo (cs)"
+              }
+            },
+            {
+              "value": "da",
+              "label": {
+                "en": "Danish (da)",
+                "fr": "Danois (da)",
+                "de": "Dänisch (da)",
+                "es": "Danés (da)"
+              }
+            },
+            {
+              "value": "nl",
+              "label": {
+                "en": "Dutch (nl)",
+                "fr": "Néerlandais (nl)",
+                "de": "Niederländisch (nl)",
+                "es": "Neerlandés (nl)"
+              }
+            },
+            {
+              "value": "en",
+              "label": {
+                "en": "English (en)",
+                "fr": "Anglais (en)",
+                "de": "Englisch (en)",
+                "es": "Inglés (en)"
+              }
+            },
+            {
+              "value": "eo",
+              "label": {
+                "en": "Esperanto (eo)",
+                "fr": "Espéranto (eo)",
+                "de": "Esperanto (eo)",
+                "es": "Esperanto (eo)"
+              }
+            },
+            {
+              "value": "et",
+              "label": {
+                "en": "Estonian (et)",
+                "fr": "Estonien (et)",
+                "de": "Estnisch (et)",
+                "es": "Estonio (et)"
+              }
+            },
+            {
+              "value": "tl",
+              "label": {
+                "en": "Filipino (tl)",
+                "fr": "Filipino (tl)",
+                "de": "Filipino (tl)",
+                "es": "Filipino (tl)"
+              }
+            },
+            {
+              "value": "fi",
+              "label": {
+                "en": "Finnish (fi)",
+                "fr": "Finnois (fi)",
+                "de": "Finnisch (fi)",
+                "es": "Finés (fi)"
+              }
+            },
+            {
+              "value": "fr",
+              "label": {
+                "en": "French (fr)",
+                "fr": "Français (fr)",
+                "de": "Französisch (fr)",
+                "es": "Francés (fr)"
+              }
+            },
+            {
+              "value": "gl",
+              "label": {
+                "en": "Galician (gl)",
+                "fr": "Galicien (gl)",
+                "de": "Galicisch (gl)",
+                "es": "Gallego (gl)"
+              }
+            },
+            {
+              "value": "de",
+              "label": {
+                "en": "German (de)",
+                "fr": "Allemand (de)",
+                "de": "Deutsch (de)",
+                "es": "Alemán (de)"
+              }
+            },
+            {
+              "value": "el",
+              "label": {
+                "en": "Greek (el)",
+                "fr": "Grec (el)",
+                "de": "Griechisch (el)",
+                "es": "Griego (el)"
+              }
+            },
+            {
+              "value": "he",
+              "label": {
+                "en": "Hebrew (he)",
+                "fr": "Hébreu (he)",
+                "de": "Hebräisch (he)",
+                "es": "Hebreo (he)"
+              }
+            },
+            {
+              "value": "hi",
+              "label": {
+                "en": "Hindi (hi)",
+                "fr": "Hindi (hi)",
+                "de": "Hindi (hi)",
+                "es": "Hindi (hi)"
+              }
+            },
+            {
+              "value": "hu",
+              "label": {
+                "en": "Hungarian (hu)",
+                "fr": "Hongrois (hu)",
+                "de": "Ungarisch (hu)",
+                "es": "Húngaro (hu)"
+              }
+            },
+            {
+              "value": "id",
+              "label": {
+                "en": "Indonesian (id)",
+                "fr": "Indonésien (id)",
+                "de": "Indonesisch (id)",
+                "es": "Indonesio (id)"
+              }
+            },
+            {
+              "value": "ga",
+              "label": {
+                "en": "Irish (ga)",
+                "fr": "Irlandais (ga)",
+                "de": "Irisch (ga)",
+                "es": "Irlandés (ga)"
+              }
+            },
+            {
+              "value": "it",
+              "label": {
+                "en": "Italian (it)",
+                "fr": "Italien (it)",
+                "de": "Italienisch (it)",
+                "es": "Italiano (it)"
+              }
+            },
+            {
+              "value": "ja",
+              "label": {
+                "en": "Japanese (ja)",
+                "fr": "Japonais (ja)",
+                "de": "Japanisch (ja)",
+                "es": "Japonés (ja)"
+              }
+            },
+            {
+              "value": "ko",
+              "label": {
+                "en": "Korean (ko)",
+                "fr": "Coréen (ko)",
+                "de": "Koreanisch (ko)",
+                "es": "Coreano (ko)"
+              }
+            },
+            {
+              "value": "ky",
+              "label": {
+                "en": "Kyrgyz (ky)",
+                "fr": "Kirghize (ky)",
+                "de": "Kirgisisch (ky)",
+                "es": "Kirguís (ky)"
+              }
+            },
+            {
+              "value": "lv",
+              "label": {
+                "en": "Latvian (lv)",
+                "fr": "Letton (lv)",
+                "de": "Lettisch (lv)",
+                "es": "Letón (lv)"
+              }
+            },
+            {
+              "value": "lt",
+              "label": {
+                "en": "Lithuanian (lt)",
+                "fr": "Lituanien (lt)",
+                "de": "Litauisch (lt)",
+                "es": "Lituano (lt)"
+              }
+            },
+            {
+              "value": "ms",
+              "label": {
+                "en": "Malay (ms)",
+                "fr": "Malais (ms)",
+                "de": "Malaiisch (ms)",
+                "es": "Malayo (ms)"
+              }
+            },
+            {
+              "value": "nb",
+              "label": {
+                "en": "Norwegian Bokmål (nb)",
+                "fr": "Norvégien bokmål (nb)",
+                "de": "Norwegisch (Bokmål) (nb)",
+                "es": "Noruego bokmal (nb)"
+              }
+            },
+            {
+              "value": "fa",
+              "label": {
+                "en": "Persian (fa)",
+                "fr": "Persan (fa)",
+                "de": "Persisch (fa)",
+                "es": "Persa (fa)"
+              }
+            },
+            {
+              "value": "pl",
+              "label": {
+                "en": "Polish (pl)",
+                "fr": "Polonais (pl)",
+                "de": "Polnisch (pl)",
+                "es": "Polaco (pl)"
+              }
+            },
+            {
+              "value": "pt",
+              "label": {
+                "en": "Portuguese (pt)",
+                "fr": "Portugais (pt)",
+                "de": "Portugiesisch (pt)",
+                "es": "Portugués (pt)"
+              }
+            },
+            {
+              "value": "ro",
+              "label": {
+                "en": "Romanian (ro)",
+                "fr": "Roumain (ro)",
+                "de": "Rumänisch (ro)",
+                "es": "Rumano (ro)"
+              }
+            },
+            {
+              "value": "ru",
+              "label": {
+                "en": "Russian (ru)",
+                "fr": "Russe (ru)",
+                "de": "Russisch (ru)",
+                "es": "Ruso (ru)"
+              }
+            },
+            {
+              "value": "zh-Hans",
+              "label": {
+                "en": "Simplified Chinese (zh-Hans)",
+                "fr": "Chinois simplifié (zh-Hans)",
+                "de": "Chinesisch (vereinfacht) (zh-Hans)",
+                "es": "Chino simplificado (zh-Hans)"
+              }
+            },
+            {
+              "value": "sk",
+              "label": {
+                "en": "Slovak (sk)",
+                "fr": "Slovaque (sk)",
+                "de": "Slowakisch (sk)",
+                "es": "Eslovaco (sk)"
+              }
+            },
+            {
+              "value": "sl",
+              "label": {
+                "en": "Slovenian (sl)",
+                "fr": "Slovène (sl)",
+                "de": "Slowenisch (sl)",
+                "es": "Esloveno (sl)"
+              }
+            },
+            {
+              "value": "es",
+              "label": {
+                "en": "Spanish (es)",
+                "fr": "Espagnol (es)",
+                "de": "Spanisch (es)",
+                "es": "Español (es)"
+              }
+            },
+            {
+              "value": "sw",
+              "label": {
+                "en": "Swahili (sw)",
+                "fr": "Swahili (sw)",
+                "de": "Suaheli (sw)",
+                "es": "Suajili (sw)"
+              }
+            },
+            {
+              "value": "sv",
+              "label": {
+                "en": "Swedish (sv)",
+                "fr": "Suédois (sv)",
+                "de": "Schwedisch (sv)",
+                "es": "Sueco (sv)"
+              }
+            },
+            {
+              "value": "th",
+              "label": {
+                "en": "Thai (th)",
+                "fr": "Thaï (th)",
+                "de": "Thailändisch (th)",
+                "es": "Tailandés (th)"
+              }
+            },
+            {
+              "value": "zh-Hant",
+              "label": {
+                "en": "Traditional Chinese (zh-Hant)",
+                "fr": "Chinois traditionnel (zh-Hant)",
+                "de": "Chinesisch (traditionell) (zh-Hant)",
+                "es": "Chino tradicional (zh-Hant)"
+              }
+            },
+            {
+              "value": "tr",
+              "label": {
+                "en": "Turkish (tr)",
+                "fr": "Turc (tr)",
+                "de": "Türkisch (tr)",
+                "es": "Turco (tr)"
+              }
+            },
+            {
+              "value": "uk",
+              "label": {
+                "en": "Ukrainian (uk)",
+                "fr": "Ukrainien (uk)",
+                "de": "Ukrainisch (uk)",
+                "es": "Ucraniano (uk)"
+              }
+            },
+            {
+              "value": "ur",
+              "label": {
+                "en": "Urdu (ur)",
+                "fr": "Ourdou (ur)",
+                "de": "Urdu (ur)",
+                "es": "Urdu (ur)"
+              }
+            },
+            {
+              "value": "vi",
+              "label": {
+                "en": "Vietnamese (vi)",
+                "fr": "Vietnamien (vi)",
+                "de": "Vietnamesisch (vi)",
+                "es": "Vietnamita (vi)"
+              }
+            }
+          ]
         }
       ],
       "outputs": [
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "translation",
+          "type": "string",
+          "label": {
+            "en": "Translation",
+            "fr": "Traduction",
+            "de": "Übersetzung",
+            "es": "Traducción"
+          }
+        },
+        {
+          "key": "source_language",
+          "type": "string",
+          "label": {
+            "en": "Source language (code)",
+            "fr": "Langue source (code)",
+            "de": "Ausgangssprache (Code)",
+            "es": "Idioma de origen (código)"
+          }
         }
       ]
-    }
-  ],
-  "widgets": [
+    },
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "detect_language",
+      "timeout_seconds": 60,
+      "label": {
+        "en": "LibreTranslate: detect the language",
+        "fr": "LibreTranslate : détecter la langue",
+        "de": "LibreTranslate: Sprache erkennen",
+        "es": "LibreTranslate: detectar el idioma"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Tells the language of a text, among the ones the server loaded: its code, for a condition, and its name.",
+        "fr": "Donne la langue d'un texte, parmi celles que le serveur a chargées : son code, pour une condition, et son nom.",
+        "de": "Nennt die Sprache eines Textes unter denen, die der Server geladen hat: ihren Code für eine Bedingung und ihren Namen.",
+        "es": "Indica el idioma de un texto, entre los que el servidor ha cargado: su código, para una condición, y su nombre."
+      },
+      "fields": [
+        {
+          "key": "text",
+          "type": "string",
+          "required": true,
+          "label": {
+            "en": "Text",
+            "fr": "Texte",
+            "de": "Text",
+            "es": "Texto"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "key": "language",
+          "type": "string",
+          "label": {
+            "en": "Language (code)",
+            "fr": "Langue (code)",
+            "de": "Sprache (Code)",
+            "es": "Idioma (código)"
+          }
+        },
+        {
+          "key": "language_name",
+          "type": "string",
+          "label": {
+            "en": "Language (name)",
+            "fr": "Langue (nom)",
+            "de": "Sprache (Name)",
+            "es": "Idioma (nombre)"
+          }
+        },
+        {
+          "key": "confidence",
+          "type": "number",
+          "label": {
+            "en": "Confidence (%)",
+            "fr": "Confiance (%)",
+            "de": "Sicherheit (%)",
+            "es": "Confianza (%)"
+          }
+        }
+      ]
     }
   ]
 }

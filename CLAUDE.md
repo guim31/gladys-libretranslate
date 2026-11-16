@@ -31,16 +31,21 @@ pushing.
 ## Architecture
 
 ```
-index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
-src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+index.js                          SDK wiring only (registerHandlers + shutdown)
+src/app.js                        registers every handler on the SDK client (also used by the tests)
+src/hub.js                        reads the server on a 5-minute timer, publishes states, runs the
+                                  translations and detections, "Test the connection"
+src/libretranslate/client.js      LibreTranslate HTTP API client, errors with a `kind`
+src/languages.js                  the 50 language codes, legacy aliases (pb/zh/zt), language names
+src/devices.js                    the one device (server): online, languages, version
+src/scenes.js                     scene actions `translate`, `detect_language`
+src/widgets.js                    dashboard widget `libretranslate`
+src/texts.js                      every message in en/fr/de/es, ActionFailure
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (mandatory)
+test/                             node --test, against the SDK's fake Gladys and a fake
+                                  LibreTranslate replaying a real server (test/fixtures/libretranslate/)
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -82,6 +87,35 @@ test/                             node --test, against the SDK's fake Gladys (in
   manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
+
+---
+
+## LibreTranslate
+
+- API: `GET /languages` (`[{ code, name, targets }]`, only the languages the
+  server loaded with `--load-only`), `GET /spec` (OpenAPI, `info.version` is
+  the only place the version shows; `/frontend/settings` has none),
+  `POST /translate` (`{ q, source, target, format, api_key }` →
+  `{ translatedText, detectedLanguage? }`, the latter only with `source: auto`),
+  `POST /detect` (`[{ language, confidence }]`, confidence in percent).
+- Errors seen on 1.9.6: a missing key is **400** "…to get an API key" (also on
+  `/detect`; `/languages` never asks for one), a wrong key **403** "Invalid
+  API key", a language not loaded **400** "it is not supported", a client over
+  the limits **429** "Slowdown: …" or **403** "Too many request limits
+  violations" (not a wrong key). The messages are localized by
+  `Accept-Language`: the client sends none, so they stay in English and the
+  regexes of `client.js` match.
+- Since 1.6 the codes are `pt-BR`, `zh-Hans`, `zh-Hant` (case-insensitive);
+  the Argos packages and older servers say `pb`, `zh`, `zt`
+  (`libretranslate/language.py`). `resolveCode` sends the spelling the server
+  lists.
+- The manifest options of the language selects are generated from
+  `LANGUAGE_CODES` with `Intl.DisplayNames` (labels "German (de)" in the four
+  languages); `test/manifest.test.js` checks they match.
+- Test server: `libretranslate/libretranslate --load-only en,fr,de,es` (models
+  downloaded at the first start, ~2 GB of RAM once the pairs are used); a key
+  with `--api-keys --require-api-key-origin https://example.invalid` then
+  `./venv/bin/ltmanage keys add 100` in the container.
 
 ---
 
@@ -127,6 +161,10 @@ code de ce dépôt. Compléter ce fichier quand un nouveau piège est découvert
   « Ajouter à Gladys » échoue en HTTP 422. Mettre 0/0, comme Zigbee2MQTT.
 - Un état publié sur une fonctionnalité **pas encore ajoutée** dans Gladys reçoit un 200 puis est
   jeté (simple ligne de log) : republier les états dans `onDeviceCreated`.
+- **Un état texte dans `publishStates` s'écrit `{ device_feature_external_id, text }`**, pas
+  `state: { text }` : le lot entier est refusé en 400 (faux Gladys du SDK 0.16 et contrat
+  `POST /state` du cœur), donc aussi les états numériques du même lot. `publishState(id, { text })`
+  seul accepte l'objet (relevé sur LibreTranslate, 16/11/2026).
 - `level-sensor/decimal` n'existe pas côté serveur. `light-sensor/binary` n'a pas de libellé dans
   le front (pastille vide) : préférer `input/binary`. Un `text/text` reçoit `{ text }`, jamais
   vide, sinon l'état est ignoré.

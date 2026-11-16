@@ -1,33 +1,39 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeConfig, DEFAULT_CONFIG } from '../src/config.js';
+import { DEFAULT_CONFIG, normalizeConfig, parseServerUrl } from '../src/config.js';
 
-test('normalizeConfig returns the defaults when called with no argument', () => {
-  assert.deepEqual(normalizeConfig(), DEFAULT_CONFIG);
+test('an address is understood bare, with a port, or as a full URL', () => {
+  assert.equal(parseServerUrl('192.0.2.20'), 'http://192.0.2.20:5000');
+  assert.equal(parseServerUrl(' 192.0.2.20:5001 '), 'http://192.0.2.20:5001');
+  assert.equal(parseServerUrl('translate.local'), 'http://translate.local:5000');
+  assert.equal(parseServerUrl('http://192.0.2.20:5000/'), 'http://192.0.2.20:5000');
+  assert.equal(parseServerUrl('https://translate.example.org'), 'https://translate.example.org');
+  assert.equal(
+    parseServerUrl('https://example.org/lt/translate'),
+    'https://example.org/lt',
+    'an endpoint copied from an example is not a prefix',
+  );
 });
 
-test('normalizeConfig keeps user values over the defaults', () => {
-  const config = normalizeConfig({ latitude: 45.5, longitude: -73.6, unit: 'fahrenheit' });
-  assert.equal(config.latitude, 45.5);
-  assert.equal(config.longitude, -73.6);
-  assert.equal(config.unit, 'fahrenheit');
+test('an unusable address is refused', () => {
+  for (const raw of ['', '   ', 'ftp://192.0.2.20', 'http://user:pass@192.0.2.20', 'http://', 42]) {
+    assert.equal(parseServerUrl(raw), null, String(raw));
+  }
+  assert.equal(parseServerUrl('http://192.0.2.20:5000/?api_key=x'), null);
 });
 
-test('normalizeConfig coerces numeric strings coming from a form', () => {
-  const config = normalizeConfig({ latitude: '48.8', longitude: '2.3', poll_frequency: '600' });
-  assert.equal(config.latitude, 48.8);
-  assert.equal(config.longitude, 2.3);
-  assert.equal(config.poll_frequency, 600);
-  assert.equal(typeof config.poll_frequency, 'number');
-});
-
-test('normalizeConfig falls back to the default for a missing numeric field', () => {
-  const config = normalizeConfig({ unit: 'celsius' });
-  assert.equal(config.poll_frequency, DEFAULT_CONFIG.poll_frequency);
-});
-
-test('GLADYS_PREFER_LOCAL defaults to true and only an explicit false disables it', () => {
-  assert.equal(normalizeConfig().GLADYS_PREFER_LOCAL, true);
-  assert.equal(normalizeConfig({ GLADYS_PREFER_LOCAL: true }).GLADYS_PREFER_LOCAL, true);
-  assert.equal(normalizeConfig({ GLADYS_PREFER_LOCAL: false }).GLADYS_PREFER_LOCAL, false);
+test('the configuration is normalized', () => {
+  assert.deepEqual(normalizeConfig(), {
+    url: null,
+    urlTyped: false,
+    apiKey: '',
+    language: DEFAULT_CONFIG.language,
+  });
+  assert.deepEqual(normalizeConfig({ url: 'nope://', api_key: ' k ', language: 'de' }), {
+    url: null,
+    urlTyped: true,
+    apiKey: 'k',
+    language: 'de',
+  });
+  assert.equal(normalizeConfig({ language: 'it' }).language, 'fr');
 });
