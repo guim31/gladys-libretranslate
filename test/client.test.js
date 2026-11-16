@@ -136,7 +136,12 @@ test('a server that does not answer in time is a timeout', async () => {
     url: URL,
     fetch: (_url, { signal }) =>
       new Promise((_resolve, reject) => {
-        signal.addEventListener('abort', () => reject(signal.reason));
+        // AbortSignal.timeout does not hold the event loop (Node 22): this does.
+        const hold = setTimeout(() => {}, 5_000);
+        signal.addEventListener('abort', () => {
+          clearTimeout(hold);
+          reject(signal.reason);
+        });
       }),
   });
   const err = await kindOf(
