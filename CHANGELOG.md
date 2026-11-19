@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-19
+
 ### Added
 
 - Scene action **LibreTranslate: translate a text**: a text with scene
@@ -26,3 +28,6 @@ the notes of the version's GitHub Release.
   checks the API key.
 - Optional API key, for a server started with `--api-keys` or a public
   instance. Every text in English, French, German and Spanish.
+
+[Unreleased]: https://github.com/guim31/gladys-libretranslate/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/guim31/gladys-libretranslate/releases/tag/v1.0.0
