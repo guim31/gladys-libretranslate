@@ -1,0 +1,182 @@
+{
+  "_source": "LibreTranslate 1.9.6 (libretranslate/libretranslate Docker image, --load-only en,fr,de,es), recorded 2026-11-16",
+  "languages": {
+    "status": 200,
+    "body": [
+      {
+        "code": "en",
+        "name": "English",
+        "targets": ["de", "en", "es", "fr"]
+      },
+      {
+        "code": "fr",
+        "name": "French",
+        "targets": ["de", "en", "es", "fr"]
+      },
+      {
+        "code": "de",
+        "name": "German",
+        "targets": ["de", "en", "es", "fr"]
+      },
+      {
+        "code": "es",
+        "name": "Spanish",
+        "targets": ["de", "en", "es", "fr"]
+      }
+    ]
+  },
+  "spec": {
+    "status": 200,
+    "body": {
+      "info": {
+        "description": "Free and Open Source Machine Translation API.",
+        "license": {
+          "name": "AGPL-3.0"
+        },
+        "title": "LibreTranslate",
+        "version": "1.9.6"
+      }
+    }
+  },
+  "translate_fr_auto_en": {
+    "status": 200,
+    "body": {
+      "detectedLanguage": {
+        "confidence": 100.0,
+        "language": "fr"
+      },
+      "translatedText": "Hello, the garage door is open."
+    }
+  },
+  "translate_en_de": {
+    "status": 200,
+    "body": {
+      "translatedText": "Die Waschmaschine ist fertig."
+    }
+  },
+  "translate_de_fr": {
+    "status": 200,
+    "body": {
+      "translatedText": "Bonjour, comment allez-vous ?"
+    }
+  },
+  "translate_es_auto_fr": {
+    "status": 200,
+    "body": {
+      "detectedLanguage": {
+        "confidence": 100.0,
+        "language": "es"
+      },
+      "translatedText": "La porte du garage est ouverte."
+    }
+  },
+  "detect_de": {
+    "status": 200,
+    "body": [
+      {
+        "confidence": 90.0,
+        "language": "de"
+      }
+    ]
+  },
+  "translate_target_not_loaded": {
+    "status": 400,
+    "body": {
+      "error": "it is not supported"
+    }
+  },
+  "translate_missing_q": {
+    "status": 400,
+    "body": {
+      "error": "Invalid request: missing q parameter"
+    }
+  },
+  "settings_open": {
+    "status": 200,
+    "body": {
+      "apiKeys": false,
+      "charLimit": -1,
+      "filesTranslation": true,
+      "frontendTimeout": 500,
+      "keyRequired": false,
+      "language": {
+        "source": {
+          "code": "auto",
+          "name": "Auto Detect"
+        },
+        "target": {
+          "code": "fr",
+          "name": "French"
+        }
+      },
+      "suggestions": false,
+      "supportedFilesFormat": [
+        ".txt",
+        ".odt",
+        ".odp",
+        ".docx",
+        ".pptx",
+        ".epub",
+        ".html",
+        ".srt",
+        ".pdf"
+      ]
+    }
+  },
+  "key_missing": {
+    "status": 400,
+    "body": {
+      "error": "Please contact the server operator to get an API key"
+    }
+  },
+  "key_wrong": {
+    "status": 403,
+    "body": {
+      "error": "Invalid API key"
+    }
+  },
+  "key_valid_translate": {
+    "status": 200,
+    "body": {
+      "translatedText": "Bonjour, comment allez-vous ?"
+    }
+  },
+  "key_missing_detect": {
+    "status": 400,
+    "body": {
+      "error": "Please contact the server operator to get an API key"
+    }
+  },
+  "settings_key_required": {
+    "status": 200,
+    "body": {
+      "apiKeys": true,
+      "charLimit": -1,
+      "filesTranslation": true,
+      "frontendTimeout": 500,
+      "keyRequired": true,
+      "language": {
+        "source": {
+          "code": "auto",
+          "name": "Auto Detect"
+        },
+        "target": {
+          "code": "fr",
+          "name": "French"
+        }
+      },
+      "suggestions": false,
+      "supportedFilesFormat": [
+        ".txt",
+        ".odt",
+        ".odp",
+        ".docx",
+        ".pptx",
+        ".epub",
+        ".html",
+        ".srt",
+        ".pdf"
+      ]
+    }
+  }
+}

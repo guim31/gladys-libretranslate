@@ -28,8 +28,14 @@ Gladys before reporting a problem.
 
 ## Scope
 
-In scope: the code of this repository and the Docker image it publishes.
+In scope: the code of this repository and the Docker image it publishes. The
+integration stores nothing under `/data`. The optional LibreTranslate API key
+is kept by Gladys in its configuration, sent only to the configured server in
+the body of the translation requests, and never logged; neither are the texts
+and their translations. The integration only talks to the LibreTranslate
+address you configure, over HTTP or HTTPS (redirects are refused).
 
 Out of scope: Gladys Assistant itself (see its
 [security policy](https://github.com/GladysAssistant/Gladys/security/policy)),
-and the third-party services and devices the integration talks to.
+and LibreTranslate itself (see its
+[repository](https://github.com/LibreTranslate/LibreTranslate)).
